@@ -5,12 +5,12 @@ import java.util.HashMap;
 
 public class DGraph implements graph{
 
-	private HashMap<Integer,node> hash_node;
+	private HashMap<Integer,node_data> hash_node;                       
 	private HashMap<Integer,HashMap<Integer,Edge>> hash_Edge;     // <src,<des,Edge>>
-	
+
 	public DGraph() {
-	   hash_node = new HashMap<>();
-	   hash_Edge = new HashMap<Integer,HashMap<Integer,Edge>>();
+		hash_node = new HashMap<>();
+		hash_Edge = new HashMap<Integer,HashMap<Integer,Edge>>();
 	}
 	@Override
 	public node_data getNode(int key) {
@@ -20,23 +20,46 @@ public class DGraph implements graph{
 			return null;
 		}
 	}
-
 	@Override
 	public edge_data getEdge(int src, int dest) {
-		// TODO Auto-generated method stub
-		return null;
+		if ( hash_Edge.containsKey(src)) {
+			if (hash_Edge.get(src).containsKey(dest)) {
+				return new Edge(hash_Edge.get(src).get(dest));
+			}else return null;
+		}else {
+			return null;
+		}
 	}
-
 	@Override
 	public void addNode(node_data n) {
-		// TODO Auto-generated method stub
-		
+		hash_node.put(n.getKey(), n);
+
 	}
 
 	@Override
 	public void connect(int src, int dest, double w) {
-		// TODO Auto-generated method stub
+		Edge edge = new Edge(src,dest,w);
 		
+		if (hash_node.containsKey(src)) {         //checks if there is a node exists at the src
+			if (hash_node.containsKey(dest)) {     //checks if there is a node exists at the dest
+				
+				if (hash_Edge.containsKey(src)) {  //checks if the src(which represents a node) has a destination
+					if (hash_Edge.get(src).containsKey(dest)) {  //checks if this edge exits already 
+						System.out.println("An Edge allready exitst between the src: "+src+" and the dest: " + dest);
+					}else {
+						hash_Edge.get(src).put(dest, edge); //adds new dest to our given src
+					}
+				}else {                             //add new src(key) and to src add a new hashmap(des and Edge);
+					HashMap<Integer, Edge> temp_edge = new HashMap<>();
+					temp_edge.put(dest, edge);
+					hash_Edge.put(src, temp_edge);					
+				}
+			}else {
+				System.out.println("**Error** Please create a node for src");
+			}
+		}else {
+			System.out.println("**Error** Please create a node for dest");
+		}
 	}
 
 	@Override

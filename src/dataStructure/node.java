@@ -9,13 +9,10 @@ public class node implements node_data {
 	private double weight;
 	private String info;
 	private int tag;
-	static int count_nodes = 0;
-	{
-		count_nodes++;
-	}
+
 	public node() {
 		int infinty = 99999999;
-		key = infinty;
+		key = infinty;                     //*****************check if correct
 		location = new Point3D(infinty,infinty,infinty);
 		weight = infinty;
 		info = "";

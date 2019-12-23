@@ -17,6 +17,20 @@ public class Edge implements edge_data {
 		this.info = info;
 		this.tag = tag;
 	}
+	public Edge(int src, int des,double weight) {
+		this.src = src;
+		this.des = des;
+		this.weight =weight;
+		info = "";
+		tag = -9999999;
+	}
+	public Edge(Edge edge) {
+		this.src = edge.src;
+		this.des = edge.des;
+		this.weight =edge.weight;
+		this.info = edge.info;
+		this.tag = edge.tag;
+	}
 
 	@Override
 	public int getSrc() {
@@ -31,6 +45,9 @@ public class Edge implements edge_data {
 	@Override
 	public double getWeight() {
 		return this.weight;
+	}
+	public void setWeight(double weight) {
+		this.weight = weight;
 	}
 
 	@Override
