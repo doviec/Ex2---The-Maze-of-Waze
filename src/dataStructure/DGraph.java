@@ -2,100 +2,96 @@ package dataStructure;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class DGraph implements graph{
-
+	private int node_counter;
+	private int edge_counter;
 	private HashMap<Integer,node_data> hash_node;                       
-	private HashMap<Integer,HashMap<Integer,Edge>> hash_Edge;     // <src,<des,Edge>>
+	private HashMap<Integer,HashMap<Integer,edge_data>> hash_Edge;     // <src,<des,Edge>>
 
 	public DGraph() {
+		node_counter = 0;
+		edge_counter = 0;
 		hash_node = new HashMap<>();
-		hash_Edge = new HashMap<Integer,HashMap<Integer,Edge>>();
+		hash_Edge = new HashMap<Integer,HashMap<Integer,edge_data>>();
 	}
 	@Override
 	public node_data getNode(int key) {
-		if (hash_node.containsKey(key)) {
-			return hash_node.get(key);
-		}else {
-			return null;
-		}
+		return hash_node.get(key);
 	}
 	@Override
 	public edge_data getEdge(int src, int dest) {
-		if ( hash_Edge.containsKey(src)) {
-			if (hash_Edge.get(src).containsKey(dest)) {
-				return new Edge(hash_Edge.get(src).get(dest));
-			}else return null;
-		}else {
+		if ( hash_Edge.get(src) == null) {
 			return null;
 		}
-	}
+		return hash_Edge.get(src).get(dest);
+	}		
 	@Override
 	public void addNode(node_data n) {
 		hash_node.put(n.getKey(), n);
-
+		node_counter++;
 	}
-
 	@Override
 	public void connect(int src, int dest, double w) {
 		Edge edge = new Edge(src,dest,w);
-		
-		if (hash_node.containsKey(src)) {         //checks if there is a node exists at the src
-			if (hash_node.containsKey(dest)) {     //checks if there is a node exists at the dest
-				
-				if (hash_Edge.containsKey(src)) {  //checks if the src(which represents a node) has a destination
-					if (hash_Edge.get(src).containsKey(dest)) {  //checks if this edge exits already 
-						System.out.println("An Edge allready exitst between the src: "+src+" and the dest: " + dest);
-					}else {
-						hash_Edge.get(src).put(dest, edge); //adds new dest to our given src
-					}
-				}else {                             //add new src(key) and to src add a new hashmap(des and Edge);
-					HashMap<Integer, Edge> temp_edge = new HashMap<>();
-					temp_edge.put(dest, edge);
-					hash_Edge.put(src, temp_edge);					
-				}
-			}else {
-				System.out.println("**Error** Please create a node for src");
-			}
-		}else {
-			System.out.println("**Error** Please create a node for dest");
+		if (hash_Edge.get(src) != null) {  //checks if the src(which represents a node) has a destination
+			hash_Edge.get(src).put(dest,edge);
+		}else {                             //add new src(key) and to src add a new hashmap(des and Edge);
+			HashMap<Integer, edge_data> temp_edge = new HashMap<>();
+			temp_edge.put(dest, edge);
+			hash_Edge.put(src, temp_edge);	
+			edge_counter++;
 		}
 	}
-
 	@Override
 	public Collection<node_data> getV() {
-		// TODO Auto-generated method stub
-		return null;
+		return hash_node.values();
 	}
-
 	@Override
 	public Collection<edge_data> getE(int node_id) {
-		// TODO Auto-generated method stub
-		return null;
+		return hash_Edge.get(node_id).values();
 	}
-
 	@Override
 	public node_data removeNode(int key) {
-		// TODO Auto-generated method stub
-		return null;
+		node_data removed_node = hash_node.get(key);
+		if (hash_node.get(key) != null) {
+			hash_node.remove(key);	
+			node_counter--;
+		}
+		if (hash_Edge.get(key) != null) {
+			edge_counter -= hash_Edge.get(key).size();
+			hash_Edge.remove(key);
+		}
+		for(HashMap<Integer,edge_data> edge: hash_Edge.values() ) {
+			if (edge.get(key) != null) {
+				hash_Edge.values().remove(key);
+				edge_counter--;
+			}
+		}
+		return removed_node;
 	}
-
 	@Override
 	public edge_data removeEdge(int src, int dest) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
+		edge_data edge = hash_Edge.get(src).get(dest);
+		if (hash_Edge.get(src) != null) {
+			hash_Edge.get(src).remove(dest);
+			edge_counter--;
+		}
+		return edge;
+	}
 	@Override
 	public int nodeSize() {
-		// TODO Auto-generated method stub
-		return 0;
+		return hash_node.size();
 	}
 
 	@Override
 	public int edgeSize() {
-		// TODO Auto-generated method stub
-		return 0;
+		return edge_counter;
 	}
 
 	@Override
@@ -103,5 +99,4 @@ public class DGraph implements graph{
 		// TODO Auto-generated method stub
 		return 0;
 	}
-
 }
