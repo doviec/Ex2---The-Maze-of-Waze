@@ -8,92 +8,102 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public class DGraph implements graph{
-	private int node_counter;
 	private int edge_counter;
-	private HashMap<Integer,node_data> hash_node;                       
-	private HashMap<Integer,HashMap<Integer,edge_data>> hash_Edge;     // <src,<des,Edge>>
+	private Map<Integer,node_data> nodeMap;                       
+	private Map<Integer,HashMap<Integer,edge_data>> edgeMap;     // <src,<des,Edge>>
 
 	public DGraph() {
-		node_counter = 0;
 		edge_counter = 0;
-		hash_node = new HashMap<>();
-		hash_Edge = new HashMap<Integer,HashMap<Integer,edge_data>>();
+		nodeMap = new HashMap<>();
+		edgeMap = new HashMap<>();
 	}
+	
+	// shalow copy
+	public DGraph(Map<Integer, node_data> nodeMap,
+			Map<Integer, HashMap<Integer, edge_data>> edgeMap) {
+		this.edge_counter = 0;
+		this.nodeMap = nodeMap;
+		this.edgeMap = edgeMap;
+	}
+	
+	// deep copy
+	public DGraph(DGraph dGraph) {
+		this.edge_counter = dGraph.edge_counter;
+		this.nodeMap = new HashMap<>(dGraph.nodeMap);
+		this.edgeMap = new HashMap<>(dGraph.edgeMap);
+	}
+
+
 	@Override
 	public node_data getNode(int key) {
-		return hash_node.get(key);
+		return nodeMap.get(key);
 	}
 	@Override
-	public edge_data getEdge(int src, int dest) {
-		if ( hash_Edge.get(src) == null) {
-			return null;
+	public edge_data getEdge(int src, int dest) {		
+		if (!(edgeMap.get(src) == null)) {
+			return edgeMap.get(src).get(dest);
 		}
-		return hash_Edge.get(src).get(dest);
+		return null;
 	}		
 	@Override
 	public void addNode(node_data n) {
-		hash_node.put(n.getKey(), n);
-		node_counter++;
+		nodeMap.put(n.getKey(), n);
 	}
 	@Override
 	public void connect(int src, int dest, double w) {
 		Edge edge = new Edge(src,dest,w);
-		if (hash_Edge.get(src) != null) {  //checks if the src(which represents a node) has a destination
-			hash_Edge.get(src).put(dest,edge);
+		if (edgeMap.get(src) != null) {  //checks if the src(which represents a node) has a destination
+			edgeMap.get(src).put(dest,edge);
 		}else {                             //add new src(key) and to src add a new hashmap(des and Edge);
 			HashMap<Integer, edge_data> temp_edge = new HashMap<>();
 			temp_edge.put(dest, edge);
-			hash_Edge.put(src, temp_edge);	
+			edgeMap.put(src, temp_edge);	
 			edge_counter++;
 		}
 	}
 	@Override
 	public Collection<node_data> getV() {
-		return hash_node.values();
+		return nodeMap.values();
 	}
 	@Override
 	public Collection<edge_data> getE(int node_id) {
-		return hash_Edge.get(node_id).values();
+		if (edgeMap.get(node_id) != null) {
+		return edgeMap.get(node_id).values();
+		}
+		return null;
 	}
 	@Override
 	public node_data removeNode(int key) {
-		node_data removed_node = hash_node.get(key);
-		if (hash_node.get(key) != null) {
-			hash_node.remove(key);	
-			node_counter--;
+
+		if (edgeMap.get(key) != null) {
+			edge_counter -= edgeMap.get(key).size();
+			edgeMap.remove(key);
 		}
-		if (hash_Edge.get(key) != null) {
-			edge_counter -= hash_Edge.get(key).size();
-			hash_Edge.remove(key);
-		}
-		for(HashMap<Integer,edge_data> edge: hash_Edge.values() ) {
+		for(Map<Integer,edge_data> edge: edgeMap.values() ) {
 			if (edge.get(key) != null) {
-				hash_Edge.values().remove(key);
+				edgeMap.remove(key);
 				edge_counter--;
 			}
 		}
-		return removed_node;
+		return nodeMap.remove(key);
 	}
 	@Override
 	public edge_data removeEdge(int src, int dest) {
-
-		edge_data edge = hash_Edge.get(src).get(dest);
-		if (hash_Edge.get(src) != null) {
-			hash_Edge.get(src).remove(dest);
+		if (edgeMap.get(src) != null) {
 			edge_counter--;
+			return edgeMap.get(src).remove(dest);
+			
 		}
-		return edge;
+		return null;
 	}
 	@Override
 	public int nodeSize() {
-		return hash_node.size();
+		return nodeMap.size();
 	}
-
 	@Override
 	public int edgeSize() {
 		return edge_counter;
 	}
-
 	@Override
 	public int getMC() {
 		// TODO Auto-generated method stub
