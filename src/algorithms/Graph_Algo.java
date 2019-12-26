@@ -1,16 +1,23 @@
 package algorithms;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
 import java.util.HashSet;
 import java.util.List;
 
+import org.w3c.dom.Node;
+
 import dataStructure.DGraph;
 import dataStructure.edge_data;
 import dataStructure.graph;
+import dataStructure.node;
 import dataStructure.node_data;
 
 /**
@@ -45,7 +52,15 @@ public class Graph_Algo implements graph_algorithms{
 
 	@Override
 	public void save(String file_name) {
-		// TODO Auto-generated method stub
+		try { 
+			FileOutputStream file = new FileOutputStream(file_name);
+			ObjectOutputStream out = new ObjectOutputStream(file);
+			out.writeObject(dGraph);
+			out.close();
+			file.close();
+		} catch (IOException e) {
+			System.err.println("**exception**");
+		}
 
 	}
 
@@ -102,9 +117,46 @@ public class Graph_Algo implements graph_algorithms{
 	}
 
 	@Override
-	public double shortestPathDist(int src, int dest) {
-		// TODO Auto-generated method stub
-		return 0;
+	public double shortestPathDist(int src, int dest) {        //info: visited, weight: cost
+		int Infinity = (int) Double.POSITIVE_INFINITY;
+		Collection<node_data> nodes = dGraph.getV(); 
+		ArrayList<node_data> listNotVisited = new ArrayList<node_data>();  //list of all unvisited nodes
+		node_data currentNode = null;
+		
+		for (node_data node : dGraph.getV()) {     //initiate all weights to infinity except our current node.
+			listNotVisited.add(node);              //adds all nodes to list
+			if (node.getKey() == src) {
+				node.setWeight(0);                
+				currentNode = node;
+			}else {
+				node.setWeight(Infinity);
+			}
+		}
+		node_data nextNode = null;
+		int destKey;
+		double checkWeight;
+		while(!(listNotVisited.isEmpty())) {
+			
+			double min = Double.POSITIVE_INFINITY;
+			Collection<edge_data> edges = dGraph.getE(currentNode.getKey());  //edges of our current node;
+			double currentNodeWeight = currentNode.getWeight();
+			int minWeight = Infinity;
+			for (edge_data neighbour : edges ) {
+				destKey = neighbour.getDest();     //the key of the edge
+				checkWeight = currentNodeWeight + neighbour.getWeight();      //the cost of getting to the neigbour
+				double nodeWeight = dGraph.getNode(destKey).getWeight();
+				if (checkWeight <= nodeWeight) {   //if the cost is cheaper 
+					dGraph.getNode(destKey).setWeight(checkWeight);           // update it
+				}
+				if (!(listNotVisited.contains(dGraph.getNode(destKey))) && nodeWeight <= minWeight){
+					nextNode = dGraph.getNode(destKey);
+				}
+			}listNotVisited.remove(currentNode);
+			if (nextNode == null) {
+				nextNode = listNotVisited.get(0);
+			}
+		}
+		return dGraph.getNode(dest).getWeight();
 	}
 
 	@Override
