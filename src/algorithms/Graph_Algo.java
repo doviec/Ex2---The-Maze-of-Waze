@@ -17,7 +17,6 @@ import org.w3c.dom.Node;
 import dataStructure.DGraph;
 import dataStructure.edge_data;
 import dataStructure.graph;
-import dataStructure.node;
 import dataStructure.node_data;
 
 /**
@@ -98,7 +97,8 @@ public class Graph_Algo implements graph_algorithms{
 		boolean temp;
 		for (edge_data dest : edges) {
 
-			if ( !(checkedPath(keySet, dest.getDest()))) {          //checks if we've been to this destination.
+			if ( !( keySet.contains(dest.getDest()))) {          //checks if we've been to this destination.
+				keySet.add(dest.getDest());
 				temp = isSrcConnected(dest.getDest(), key, keySet);  // if not then we recursively check if this dest is connected to our key;
 				flag = flag || temp;
 				if (temp == true) {
@@ -107,13 +107,6 @@ public class Graph_Algo implements graph_algorithms{
 			}
 		}
 		return flag; 
-	}
-	public boolean checkedPath(HashSet keySet, int dest) {
-		if ( keySet.contains(dest)) {
-			return true;
-		}
-		keySet.add(dest);
-		return false;
 	}
 
 	@Override
@@ -132,21 +125,20 @@ public class Graph_Algo implements graph_algorithms{
 				node.setWeight(Infinity);
 			}
 		}
-		node_data nextNode = null;
+		node_data nextNode;
 		int destKey;
 		double checkWeight;
 		while(!(listNotVisited.isEmpty())) {
-			
-			double min = Double.POSITIVE_INFINITY;
+			nextNode = null;
 			Collection<edge_data> edges = dGraph.getE(currentNode.getKey());  //edges of our current node;
 			double currentNodeWeight = currentNode.getWeight();
 			int minWeight = Infinity;
 			for (edge_data neighbour : edges ) {
 				destKey = neighbour.getDest();     //the key of the edge
-				checkWeight = currentNodeWeight + neighbour.getWeight();      //the cost of getting to the neigbour
+				checkWeight = currentNodeWeight + neighbour.getWeight();    //the cost of getting to the neigbour
 				double nodeWeight = dGraph.getNode(destKey).getWeight();
 				if (checkWeight <= nodeWeight) {   //if the cost is cheaper 
-					dGraph.getNode(destKey).setWeight(checkWeight);           // update it
+					dGraph.getNode(destKey).setWeight(checkWeight);         // update it
 				}
 				if (!(listNotVisited.contains(dGraph.getNode(destKey))) && nodeWeight <= minWeight){
 					nextNode = dGraph.getNode(destKey);

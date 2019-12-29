@@ -7,12 +7,12 @@ public class Edge implements edge_data {
 	private String info;
 	private int tag;
 
-	public Edge() {
-
-	}
 	public Edge(int src, int des, double weight, String info, int tag) {
 		this.src = src;
 		this.des = des;
+		if (weight < 0) {
+			throw new RuntimeException("Weight must be positive");
+		}
 		this.weight =weight;
 		this.info = info;
 		this.tag = tag;
@@ -20,9 +20,12 @@ public class Edge implements edge_data {
 	public Edge(int src, int des,double weight) {
 		this.src = src;
 		this.des = des;
+		if (weight < 0) {
+			throw new RuntimeException("Weight must be positive");
+		}
 		this.weight =weight;
 		info = "";
-		tag = -9999999;
+		tag = -1;
 	}
 	public Edge(Edge edge) {
 		this.src = edge.src;

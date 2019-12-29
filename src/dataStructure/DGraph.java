@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import utils.Point3D;
+
 public class DGraph implements graph{
 	private int edge_counter;
 	private Map<Integer,node_data> nodeMap;                       
@@ -17,15 +19,15 @@ public class DGraph implements graph{
 		nodeMap = new HashMap<>();
 		edgeMap = new HashMap<>();
 	}
-	
-	// shalow copy
+
+	// Shallow copy
 	public DGraph(Map<Integer, node_data> nodeMap,
 			Map<Integer, HashMap<Integer, edge_data>> edgeMap) {
 		this.edge_counter = 0;
 		this.nodeMap = nodeMap;
 		this.edgeMap = edgeMap;
 	}
-	
+
 	// deep copy
 	public DGraph(DGraph dGraph) {
 		this.edge_counter = dGraph.edge_counter;
@@ -33,9 +35,9 @@ public class DGraph implements graph{
 		this.edgeMap = new HashMap<>(dGraph.edgeMap);
 	}
 
-
 	@Override
 	public node_data getNode(int key) {
+
 		return nodeMap.get(key);
 	}
 	@Override
@@ -47,13 +49,20 @@ public class DGraph implements graph{
 	}		
 	@Override
 	public void addNode(node_data n) {
+		if (n == null) {
+			throw new RuntimeException("Not allowed to add null");
+		}
 		nodeMap.put(n.getKey(), n);
 	}
 	@Override
 	public void connect(int src, int dest, double w) {
+		if (nodeMap.get(src) == null || nodeMap.get(dest) == null) {
+			throw new RuntimeException("Not allowed to build edge to a Node that does not exist");
+		}
 		Edge edge = new Edge(src,dest,w);
 		if (edgeMap.get(src) != null) {  //checks if the src(which represents a node) has a destination
 			edgeMap.get(src).put(dest,edge);
+			edge_counter++;
 		}else {                             //add new src(key) and to src add a new hashmap(des and Edge);
 			HashMap<Integer, edge_data> temp_edge = new HashMap<>();
 			temp_edge.put(dest, edge);
@@ -68,7 +77,7 @@ public class DGraph implements graph{
 	@Override
 	public Collection<edge_data> getE(int node_id) {
 		if (edgeMap.get(node_id) != null) {
-		return edgeMap.get(node_id).values();
+			return edgeMap.get(node_id).values();
 		}
 		return null;
 	}
@@ -81,7 +90,7 @@ public class DGraph implements graph{
 		}
 		for(Map<Integer,edge_data> edge: edgeMap.values() ) {
 			if (edge.get(key) != null) {
-				edgeMap.remove(key);
+				edge.remove(key);
 				edge_counter--;
 			}
 		}
@@ -89,10 +98,12 @@ public class DGraph implements graph{
 	}
 	@Override
 	public edge_data removeEdge(int src, int dest) {
+		if (nodeMap.get(src) == null || nodeMap.get(dest) == null || src == dest) {
+			throw new RuntimeException("invalid input");
+		}
 		if (edgeMap.get(src) != null) {
 			edge_counter--;
 			return edgeMap.get(src).remove(dest);
-			
 		}
 		return null;
 	}
@@ -106,7 +117,6 @@ public class DGraph implements graph{
 	}
 	@Override
 	public int getMC() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 }
