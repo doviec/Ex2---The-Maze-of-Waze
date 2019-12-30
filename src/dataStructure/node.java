@@ -4,12 +4,19 @@ import utils.Point3D;
 
 public class Node implements node_data {
 
-	private int key;
+	private Integer key;
 	private Point3D location;
 	private double weight;
 	private String info;
 	private int tag;
-	
+
+	public Node() {
+		this.key = null;
+		this.location = new Point3D(0,0,0);
+		this.weight = 0;
+		this.info = "";
+		this.tag = 0;
+	}	
 	public Node(int key, Point3D location, double weight, String info, int tag) {
 		this.key = key;
 		this.location = location;
@@ -19,7 +26,7 @@ public class Node implements node_data {
 	}
 	public String toString() {
 		return ("key: " + key + " location: " + location + " weight: "
-	             + weight + " info: " + info + " tag: " + tag);
+				+ weight + " info: " + info + " tag: " + tag);
 	}
 	@Override
 	public int getKey() {

@@ -25,23 +25,26 @@ import dataStructure.node_data;
  * @author 
  *
  */
-public class Graph_Algo implements graph_algorithms{
+public class GraphAlgo implements graph_algorithms{
 
-	private DGraph dGraph;
-
+	private DGraph graph;
+	
+	public GraphAlgo() {
+		
+	}
 	@Override
 	public void init(graph g) {
-		DGraph saveDGraph = new DGraph((DGraph) g);
+		this.graph = (DGraph) g;
 
 	}
 
 	@Override
 	public void init(String file_name) {
-		Graph_Algo saveGraph = new Graph_Algo();
+		GraphAlgo saveGraph = new GraphAlgo();
 		try {
 			FileInputStream file = new FileInputStream(file_name);
 			ObjectInputStream input = new ObjectInputStream(file);
-			saveGraph = (Graph_Algo) input.readObject();
+			saveGraph = (GraphAlgo) input.readObject();
 			input.close();
 			file.close();
 		} catch (Exception e) {
@@ -54,7 +57,7 @@ public class Graph_Algo implements graph_algorithms{
 		try { 
 			FileOutputStream file = new FileOutputStream(file_name);
 			ObjectOutputStream out = new ObjectOutputStream(file);
-			out.writeObject(dGraph);
+			out.writeObject(graph);
 			out.close();
 			file.close();
 		} catch (IOException e) {
@@ -67,11 +70,11 @@ public class Graph_Algo implements graph_algorithms{
 	public boolean isConnected() {
 		boolean flag;
 		int src;
-		for (node_data node : dGraph.getV()) {   //checks through every node if its connected to all others.
+		for (node_data node : graph.getV()) {   //checks through every node if its connected to all others.
 			src = node.getKey();
 			flag = true;
 			HashSet<Integer> keySet = new HashSet<>();         
-			for (node_data differentNode : dGraph.getV()) {     
+			for (node_data differentNode : graph.getV()) {     
 				if ( differentNode.getKey() != node.getKey()) {   //if both keys arnet the same check if the node in the prior for connects to this one.
 					flag = isSrcConnected(src, differentNode.getKey(),keySet);   //returns true if connectes.
 				}
@@ -84,10 +87,10 @@ public class Graph_Algo implements graph_algorithms{
 	}
 	public boolean isSrcConnected(int src, int key, HashSet keySet) {
 
-		if (dGraph.getE(src) == null || dGraph.getE(src).isEmpty()) {   //checks if src has any destinations (has edges)
+		if (graph.getE(src) == null || graph.getE(src).isEmpty()) {   //checks if src has any destinations (has edges)
 			return false;
 		}
-		Collection<edge_data> edges = dGraph.getE(src);
+		Collection<edge_data> edges = graph.getE(src);
 		for (edge_data dest : edges) {
 			if (dest.getDest() == key) {
 				return true;
@@ -111,50 +114,63 @@ public class Graph_Algo implements graph_algorithms{
 
 	@Override
 	public double shortestPathDist(int src, int dest) {        //info: visited, weight: cost
-		int Infinity = (int) Double.POSITIVE_INFINITY;
-		Collection<node_data> nodes = dGraph.getV(); 
+		if (graph.getNode(src) == null || graph.getNode(dest) == null || src == dest) {
+			throw new RuntimeException("Please use valid nodes for this method");
+		}
 		ArrayList<node_data> listNotVisited = new ArrayList<node_data>();  //list of all unvisited nodes
 		node_data currentNode = null;
-		
-		for (node_data node : dGraph.getV()) {     //initiate all weights to infinity except our current node.
+		for (node_data node : graph.getV()) {     //initiate all weights to infinity except our current node.
 			listNotVisited.add(node);              //adds all nodes to list
 			if (node.getKey() == src) {
 				node.setWeight(0);                
 				currentNode = node;
 			}else {
-				node.setWeight(Infinity);
+				node.setWeight(999999);
 			}
 		}
 		node_data nextNode;
 		int destKey;
-		double checkWeight;
+		double checkWeight,nodeWeight;
 		while(!(listNotVisited.isEmpty())) {
 			nextNode = null;
-			Collection<edge_data> edges = dGraph.getE(currentNode.getKey());  //edges of our current node;
 			double currentNodeWeight = currentNode.getWeight();
-			int minWeight = Infinity;
-			for (edge_data neighbour : edges ) {
+			double minWeight = 999999;
+			for (edge_data neighbour : graph.getE(currentNode.getKey()) ) {
 				destKey = neighbour.getDest();     //the key of the edge
-				checkWeight = currentNodeWeight + neighbour.getWeight();    //the cost of getting to the neigbour
-				double nodeWeight = dGraph.getNode(destKey).getWeight();
+				checkWeight = currentNodeWeight + neighbour.getWeight();    //the cost of getting to the neighbor
+				nodeWeight = graph.getNode(destKey).getWeight();
 				if (checkWeight <= nodeWeight) {   //if the cost is cheaper 
-					dGraph.getNode(destKey).setWeight(checkWeight);         // update it
+					graph.getNode(destKey).setWeight(checkWeight);         // update the weight
+					graph.getNode(destKey).setInfo(currentNode.getInfo() + currentNode.getKey() + "");
+				}//if we haven't visited and the node has a minimum weight than update nextNode and minWeight
+				if (listNotVisited.contains(graph.getNode(destKey)) && nodeWeight <= minWeight){ 
+					nextNode = graph.getNode(destKey);
+					minWeight = nodeWeight;
 				}
-				if (!(listNotVisited.contains(dGraph.getNode(destKey))) && nodeWeight <= minWeight){
-					nextNode = dGraph.getNode(destKey);
-				}
-			}listNotVisited.remove(currentNode);
-			if (nextNode == null) {
-				nextNode = listNotVisited.get(0);
+			}
+			listNotVisited.remove(currentNode);
+			if (nextNode == null && !(listNotVisited.isEmpty())) {
+				currentNode = listNotVisited.get(0);
+			}else {
+				currentNode = nextNode;
 			}
 		}
-		return dGraph.getNode(dest).getWeight();
+		return graph.getNode(dest).getWeight();
 	}
-
 	@Override
 	public List<node_data> shortestPath(int src, int dest) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		List<node_data> path = new ArrayList<node_data>();
+		shortestPathDist(src, dest);
+		String stringPath = graph.getNode(dest).getInfo();
+		int lengthPath = graph.getNode(dest).getInfo().length();
+		int key;
+		for (int i = 0; i < lengthPath; i++) {
+			key = Character.getNumericValue(stringPath.charAt(i));
+			path.add(graph.getNode(key));
+		}
+		path.add(graph.getNode(dest));
+		return path;
 	}
 
 	@Override
@@ -165,7 +181,7 @@ public class Graph_Algo implements graph_algorithms{
 
 	@Override
 	public graph copy() {
-		return new DGraph(this.dGraph);
+		return new DGraph(this.graph);
 
 	}
 
