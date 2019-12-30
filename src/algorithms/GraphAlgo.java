@@ -73,8 +73,8 @@ public class GraphAlgo implements graph_algorithms{
 		for (node_data node : graph.getV()) {   //checks through every node if its connected to all others.
 			src = node.getKey();
 			flag = true;
-			HashSet<Integer> keySet = new HashSet<>();         
-			for (node_data differentNode : graph.getV()) {     
+			for (node_data differentNode : graph.getV()) {   
+				HashSet<Integer> keySet = new HashSet<>(); 
 				if ( differentNode.getKey() != node.getKey()) {   //if both keys arnet the same check if the node in the prior for connects to this one.
 					flag = isSrcConnected(src, differentNode.getKey(),keySet);   //returns true if connectes.
 				}
