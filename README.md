@@ -1,4 +1,4 @@
-# Ex2 The-Maze-of-Waze
+# Ex2 The-Maze-of-Waze :red_car: :taxi: :blue_car:
 Ex2 this project represents a data structure infrastructure for the next projects to come. In addition this project develops a graph data structure that allows the user to operate a variety of algorithms towards the graph. The graph will be visual by using class Gui.
   ## Fundamental Classes of Ex2
 ### Class Node 
