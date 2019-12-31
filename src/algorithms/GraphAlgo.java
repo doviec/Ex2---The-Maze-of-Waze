@@ -14,6 +14,8 @@ import java.util.List;
 
 import org.w3c.dom.Node;
 
+import com.sun.jdi.Value;
+
 import dataStructure.DGraph;
 import dataStructure.edge_data;
 import dataStructure.graph;
@@ -28,9 +30,9 @@ import dataStructure.node_data;
 public class GraphAlgo implements graph_algorithms{
 
 	private DGraph graph;
-	
+
 	public GraphAlgo() {
-		
+
 	}
 	@Override
 	public void init(graph g) {
@@ -141,7 +143,7 @@ public class GraphAlgo implements graph_algorithms{
 				nodeWeight = graph.getNode(destKey).getWeight();
 				if (checkWeight <= nodeWeight) {   //if the cost is cheaper 
 					graph.getNode(destKey).setWeight(checkWeight);         // update the weight
-					graph.getNode(destKey).setInfo(currentNode.getInfo() + currentNode.getKey() + "");
+					graph.getNode(destKey).setInfo(currentNode.getInfo() + ">" + currentNode.getKey() + "");
 				}//if we haven't visited and the node has a minimum weight than update nextNode and minWeight
 				if (listNotVisited.contains(graph.getNode(destKey)) && nodeWeight <= minWeight){ 
 					nextNode = graph.getNode(destKey);
@@ -159,25 +161,44 @@ public class GraphAlgo implements graph_algorithms{
 	}
 	@Override
 	public List<node_data> shortestPath(int src, int dest) {
-		
 		List<node_data> path = new ArrayList<node_data>();
 		shortestPathDist(src, dest);
 		String stringPath = graph.getNode(dest).getInfo();
 		int lengthPath = graph.getNode(dest).getInfo().length();
-		int key;
-		for (int i = 0; i < lengthPath; i++) {
-			key = Character.getNumericValue(stringPath.charAt(i));
-			path.add(graph.getNode(key));
+		int key = 0;
+		System.out.println(stringPath);
+		for (int i = 1; i < lengthPath; i++) {  
+			if (stringPath.charAt(i) == '>') {  
+				path.add(graph.getNode(key));
+				key = 0;
+			}else {
+				key = key*10 + Character.getNumericValue(stringPath.charAt(i)); //key will be equal to the node in the string before the '>' 
+			}
 		}
+		path.add(graph.getNode(key));
 		path.add(graph.getNode(dest));
 		return path;
 	}
 
 	@Override
 	public List<node_data> TSP(List<Integer> targets) {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
+//	/**
+//	 * checks if strings contains string
+//	 * @param s1
+//	 * @param s2
+//	 * @return
+//	 */
+//		public boolean contains(String s1, String s2) {
+//			String [] str = s1.split(" ");
+//			for (int i = 0; i < str.length; i++) {
+//				if (str[i].equals(s2)) {
+//					return true;
+//				}
+//			}return false;
+//		}
 
 	@Override
 	public graph copy() {

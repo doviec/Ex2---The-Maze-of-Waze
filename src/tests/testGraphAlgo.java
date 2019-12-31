@@ -88,28 +88,38 @@ public class testGraphAlgo {
 	@Test
 	void testShortestPathList() {
 		graph graph = new DGraph();
-		for (int i = 0; i < 6; i++) {
+		for (int i = 0; i < 15; i++) {
 			node_data node = new Node(i,new Point3D(0,0,0), 0,"", 0);
 			graph.addNode(node);
 		}	
 		graph.connect(0, 1, 2);
 		graph.connect(1, 2, 3);
 		graph.connect(2, 3, 4);
-		graph.connect(3, 0, 1);
-		graph.connect(0, 3, 4);
-		graph.connect(2, 0, 1);
-		graph.connect(3, 4, 3);
+		graph.connect(3, 4, 1);
 		graph.connect(4, 5, 4);
-		graph.connect(5, 0, 1);
-		graph.connect(2, 4, 1);
+		graph.connect(5, 6, 1);
+		graph.connect(6, 7, 3);
+		graph.connect(7, 8, 4);
+		graph.connect(8, 9, 1);
+		graph.connect(9, 10, 1);
+		graph.connect(10, 11, 4);
+		graph.connect(11, 12, 3);
+		graph.connect(12, 13, 4);
+		graph.connect(13, 14, 1);
+		graph.connect(14, 0, 15);
+		graph.connect(14, 3, 1);
+		graph.connect(10, 13, 2);
+		graph.connect(3, 11, 6);
+
 		GraphAlgo algo = new GraphAlgo();
 		algo.init(graph);
-		List<node_data> path = algo.shortestPath(0, 4);
+		List<node_data> path = algo.shortestPath(1, 13);
 		String string = "";
 		for (int i = 0; i < path.size()-1 ;i++) {
 			string += (path.get(i).getKey()+"" + " > ");
 		}
 		string += (path.get(path.size()-1).getKey() + "");
-		assertEquals("0 > 1 > 2 > 4", string);
+		assertEquals("1 > 2 > 3 > 11 > 12 > 13", string);
+		//System.out.println(string);
 	}
 }
