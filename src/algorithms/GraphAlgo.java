@@ -29,6 +29,9 @@ public class GraphAlgo implements graph_algorithms{
 	public GraphAlgo() {
 
 	}
+	public GraphAlgo(graph gra) {
+		init(gra);
+	}
 	@Override
 	public void init(graph g) {
 		this.graph = (DGraph) g;
@@ -130,7 +133,7 @@ public class GraphAlgo implements graph_algorithms{
 				node.setWeight(0);                
 				currentNode = node;
 			}else {
-				node.setWeight(9999999);    //**************** change to infinity
+				node.setWeight(Double.POSITIVE_INFINITY);   
 			}
 		}
 		node_data nextNode = null;
@@ -139,7 +142,7 @@ public class GraphAlgo implements graph_algorithms{
 		listNotVisited.add(currentNode);
 
 		while((!listNotVisited.isEmpty()) || this.graph.getNode(dest).getTag() == 0) {
-			nextNode = listNotVisited.get(0);
+			nextNode = listNotVisited.get(0);   //incase the current node has no edges
 			currentNodeWeight = currentNode.getWeight();
 			currentNode.setTag(1);
 			listNotVisited.remove(currentNode);
@@ -185,9 +188,7 @@ public class GraphAlgo implements graph_algorithms{
 				key = key*10 + Character.getNumericValue(stringPath.charAt(i)); //key will be equal to the node in the string before the '>' 
 			}
 		}
-		//node_data node1 = new Node((Node) graph.getNode(key));
 		path.add(graph.getNode(key));
-		//	node_data node2 = new Node((Node) graph.getNode(dest));
 		path.add(graph.getNode(dest));
 		return path;
 	}
@@ -197,34 +198,69 @@ public class GraphAlgo implements graph_algorithms{
 		if (targets.size() <= 1) {
 			throw new RuntimeException("Please enter at least two nodes");
 		}
-		List<node_data> path = new ArrayList<node_data>();
-		List<node_data> temp;
-		int src; 
-		int dest = 0; 
-		String nodePath;
-		String target;
-		while (targets.size() > 1) {
-			src = targets.get(0);
-			dest = targets.get(1);
-			targets.remove(0);
-			temp = shortestPath(src, dest);
-			path.addAll(temp);
-			nodePath = this.graph.getNode(dest).getInfo();  //the path to dest Node
-			for (int i = 1; i < targets.size(); i++) {     //checks for all the 
-				target = String.valueOf(targets.get(i));
-				if (contains(nodePath, target)) {
-					targets.remove(i);
-					i--;
-				}
+		if (!this.isConnected()) {
+			if (!firmlyConnected(targets)) {   //checks if the 'nodes'represented by the list are firmly connected 
+				System.out.println("this list does not represent a connected graph");
+				return null;
 			}
 		}
-		//		String [] trimedInfo = this.graph.getNode(dest).getInfo().split(">");
-		//			int pathSize = path.size();
-		//		for (int i=0;i<pathSize-trimedInfo.length;i++) {
-		//			path.remove(0);
-		//		}
+		try {
+			List<node_data> path = new ArrayList<node_data>();
+			List<node_data> temp;
+			int src; 
+			int dest = 0; 
+			String nodePath;
+			String target;
+			while (targets.size() > 1) {
+				src = targets.get(0);
+				dest = targets.get(1);
+				targets.remove(0);
+				temp = shortestPath(src, dest);
+				path.addAll(temp);
+				nodePath = this.graph.getNode(dest).getInfo();  //the path to dest Node
+				for (int i = 1; i < targets.size(); i++) {     //checks for all the 
+					target = String.valueOf(targets.get(i));
+					if (contains(nodePath, target)) {
+						targets.remove(i);
+						i--;
+					}
+				}
+			}
+			String [] trimedInfo = this.graph.getNode(dest).getInfo().split(">");
+			int pathSize = path.size();
+			for (int i=0;i<pathSize-trimedInfo.length;i++) {
+				path.remove(0);
+			}
 
-		return path;
+			return path;
+		} catch (Exception e) {
+			throw new RuntimeException("Cant reach a node invalid list!!");
+		}
+	}
+	private boolean firmlyConnected(List<Integer> targets) {
+		graph tempGraph = new DGraph();
+		int src, dest;
+		double weight;
+		for (int index : targets) {   //add nodes to new graph
+			tempGraph.addNode(graph.getNode(index));
+		}
+		for (int index : targets) {
+			if (this.graph.getE(index) != null) {
+				for (edge_data edge : graph.getE(index)) {
+					src =  edge.getSrc();
+					dest = edge.getDest();
+					weight = edge.getWeight();
+					if (targets.contains(src) && targets.contains(dest))
+					tempGraph.connect(src, dest, weight);
+				}				
+			}
+		}
+		GraphAlgo temp = new GraphAlgo();
+		temp.init(tempGraph);
+		if (temp.isConnected()) {
+			return true;
+		}
+		return false;
 	}
 	/**
 	 * checks if string s1 contains string s2

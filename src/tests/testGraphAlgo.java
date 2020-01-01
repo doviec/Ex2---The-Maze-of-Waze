@@ -140,6 +140,40 @@ public class testGraphAlgo {
 		targets.add(2);
 		targets.add(1);
 		targets.add(6);
+		targets.add(5);
+		targets.add(0);
+		List<node_data> path = algo.TSP(targets);
+		String string = "";
+		for (int i = 0; i < path.size()-1 ;i++) {
+			string += (path.get(i).getKey()+"" + " > ");
+		}
+		string += (path.get(path.size()-1).getKey() + "");
+		assertEquals("3 > 4 > 5 > 6 > 0 > 1 > 2", string);
+	}
+	@Test
+	void testTSPNotConnected() {
+		graph graph = new DGraph();
+		for (int i = 0; i < 5; i++) {
+			node_data node = new Node(i,new Point3D(0,0,0), 0,"", 0);
+			graph.addNode(node);
+		}	
+		graph.connect(0, 1, 10);
+		graph.connect(1, 0, 10);
+		graph.connect(2, 1, 10);
+		graph.connect(1, 2, 10);
+		graph.connect(3, 2, 2);
+		graph.connect(2, 3, 3);
+		graph.connect(3, 0, 4);
+		graph.connect(0, 3, 4);
+		graph.connect(0, 4, 4);
+		
+		GraphAlgo algo = new GraphAlgo();
+		algo.init(graph);
+		List<Integer> targets = new ArrayList<Integer>();
+		targets.add(1);
+		targets.add(0);
+		targets.add(4);
+		targets.add(3);
 		List<node_data> path = algo.TSP(targets);
 		String string = "";
 		for (int i = 0; i < path.size()-1 ;i++) {
@@ -147,12 +181,5 @@ public class testGraphAlgo {
 		}
 		string += (path.get(path.size()-1).getKey() + "");
 		System.out.println(string);
-
-		
-		
-		
-		
-		
-		
 	}
 }
