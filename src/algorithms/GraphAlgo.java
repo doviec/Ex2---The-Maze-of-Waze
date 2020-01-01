@@ -125,44 +125,48 @@ public class GraphAlgo implements graph_algorithms{
 		ArrayList<node_data> listNotVisited = new ArrayList<node_data>();  //list of all unvisited nodes
 		node_data currentNode = null;
 		for (node_data node : graph.getV()) {     //initiate all weights to infinity except our current node.
-			listNotVisited.add(node);              //adds all nodes to list
+			node.setTag(0);      //tag 0 means not visited and 1 is visited
 			if (node.getKey() == src) {
 				node.setWeight(0);                
 				currentNode = node;
 			}else {
-				node.setWeight(999999);
+				node.setWeight(9999999);    //**************** change to infinity
 			}
 		}
-		node_data nextNode;
-		int destKey;
-		double checkWeight,nodeWeight;
-		while(!(listNotVisited.isEmpty())) {
-			nextNode = null;
-			double currentNodeWeight = currentNode.getWeight();
-			double minWeight = 999999;
+		node_data nextNode = null;
+		node_data destNode;
+		double currentNodeWeight,checkWeight,nodeWeight;
+		listNotVisited.add(currentNode);
+
+		while((!listNotVisited.isEmpty()) || this.graph.getNode(dest).getTag() == 0) {
+			nextNode = listNotVisited.get(0);
+			currentNodeWeight = currentNode.getWeight();
+			currentNode.setTag(1);
+			listNotVisited.remove(currentNode);
+			double minWeight = Double.POSITIVE_INFINITY;
 			if (graph.getE(currentNode.getKey()) != null) {
 				for (edge_data neighbour : graph.getE(currentNode.getKey()) ) {
-					destKey = neighbour.getDest();     //the key of the edge
-					checkWeight = currentNodeWeight + neighbour.getWeight();    //the cost of getting to the neighbor
-					nodeWeight = graph.getNode(destKey).getWeight();
-					if (checkWeight <= nodeWeight) {   //if the cost is cheaper 
-						graph.getNode(destKey).setWeight(checkWeight);         // update the weight
-						String newInfo = currentNode.getInfo() + ">" + currentNode.getKey() + "";
-						graph.getNode(destKey).setInfo(newInfo); //saves the whole path
-					}//if we haven't visited and the node has a minimum weight than update nextNode and minWeight
-					if (listNotVisited.contains(graph.getNode(destKey)) && nodeWeight <= minWeight){ 
-						nextNode = graph.getNode(destKey);
-						minWeight = nodeWeight;
+					destNode = this.graph.getNode(neighbour.getDest());    //the destination node of the edge
+					if (destNode.getTag() == 0) { //if we didn't visit this node insert it to the list
+						listNotVisited.add(destNode);
 					}
+					checkWeight = currentNodeWeight + neighbour.getWeight();    //the cost of getting to the neighbor
+					if (checkWeight < destNode.getWeight()) {
+						destNode.setWeight(checkWeight);
+						destNode.setInfo(currentNode.getInfo() + ">" + currentNode.getKey() + ""); //saves the whole path;
+					}
+					if (destNode.getWeight() < minWeight && destNode.getTag() == 0) {
+						nextNode = destNode;
+						minWeight = destNode.getWeight();
+					}
+				}currentNode = nextNode;
+			}else {
+				if (!listNotVisited.isEmpty()) {
+					currentNode = listNotVisited.get(0);
 				}
 			}
-			listNotVisited.remove(currentNode);
-			if (nextNode == null && !(listNotVisited.isEmpty())) {
-				currentNode = listNotVisited.get(0);
-			}else {
-				currentNode = nextNode;
-			}
 		}
+
 		return graph.getNode(dest).getWeight();
 	}
 	@Override
@@ -181,10 +185,10 @@ public class GraphAlgo implements graph_algorithms{
 				key = key*10 + Character.getNumericValue(stringPath.charAt(i)); //key will be equal to the node in the string before the '>' 
 			}
 		}
-		node_data node1 = new Node((Node) graph.getNode(key));
-		path.add(node1);
-		node_data node2 = new Node((Node) graph.getNode(dest));
-		path.add(node2);
+		//node_data node1 = new Node((Node) graph.getNode(key));
+		path.add(graph.getNode(key));
+		//	node_data node2 = new Node((Node) graph.getNode(dest));
+		path.add(graph.getNode(dest));
 		return path;
 	}
 
@@ -196,7 +200,7 @@ public class GraphAlgo implements graph_algorithms{
 		List<node_data> path = new ArrayList<node_data>();
 		List<node_data> temp;
 		int src; 
-		int dest; 
+		int dest = 0; 
 		String nodePath;
 		String target;
 		while (targets.size() > 1) {
@@ -213,7 +217,13 @@ public class GraphAlgo implements graph_algorithms{
 					i--;
 				}
 			}
-		}		
+		}
+		//		String [] trimedInfo = this.graph.getNode(dest).getInfo().split(">");
+		//			int pathSize = path.size();
+		//		for (int i=0;i<pathSize-trimedInfo.length;i++) {
+		//			path.remove(0);
+		//		}
+
 		return path;
 	}
 	/**

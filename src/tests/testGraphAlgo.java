@@ -66,10 +66,11 @@ public class testGraphAlgo {
 	void testShortestPathDist() {
 
 		graph graph = new DGraph();
-		for (int i = 0; i < 6; i++) {
+		for (int i = 0; i < 8; i++) {
 			node_data node = new Node(i,new Point3D(0,0,0), 0,"", 0);
 			graph.addNode(node);
 		}	
+		graph.connect(0, 7, 2);
 		graph.connect(0, 1, 2);
 		graph.connect(1, 2, 3);
 		graph.connect(2, 3, 4);
@@ -118,23 +119,27 @@ public class testGraphAlgo {
 	@Test
 	void testTSP() {
 		graph graph = new DGraph();
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < 9; i++) {
 			node_data node = new Node(i,new Point3D(0,0,0), 0,"", 0);
 			graph.addNode(node);
 		}	
-		graph.connect(0, 3, 2);
-		graph.connect(3, 2, 3);
-		graph.connect(2, 1, 4);
-		graph.connect(1, 4, 4);
+		graph.connect(0, 1, 2);
+		graph.connect(1, 2, 3);
+		graph.connect(2, 3, 4);
+		graph.connect(3, 4, 4);
+		graph.connect(4, 5, 2);
+		graph.connect(5, 6, 3);
+		graph.connect(6, 0, 4);
+		graph.connect(4, 7, 1);
 		
 		GraphAlgo algo = new GraphAlgo();
 		algo.init(graph);
 		List<Integer> targets = new ArrayList<Integer>();
-		targets.add(0);
-		targets.add(1);
-		targets.add(2);
 		targets.add(3);
 		targets.add(4);
+		targets.add(2);
+		targets.add(1);
+		targets.add(6);
 		List<node_data> path = algo.TSP(targets);
 		String string = "";
 		for (int i = 0; i < path.size()-1 ;i++) {
