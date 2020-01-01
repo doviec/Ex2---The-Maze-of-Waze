@@ -4,19 +4,30 @@ import utils.Point3D;
 
 public class Node implements node_data {
 
-	private Integer key;
+	private int key;
 	private Point3D location;
 	private double weight;
 	private String info;
 	private int tag;
 
 	public Node() {
-		this.key = null;
+		this.key = -1;
 		this.location = new Point3D(0,0,0);
 		this.weight = 0;
 		this.info = "";
 		this.tag = 0;
 	}	
+	public Node(Node n) {
+		this.key = n.key;
+		int x,y,z;
+		x = n.location.ix();
+		y = n.location.iy();
+		z = n.location.iz();
+		this.location = new Point3D(x,y,z);
+		this.weight = n.weight;
+		this.info = n.info;
+		this.tag = n.tag;
+	}
 	public Node(int key, Point3D location, double weight, String info, int tag) {
 		this.key = key;
 		this.location = location;
@@ -72,6 +83,11 @@ public class Node implements node_data {
 	public void setTag(int t) {
 		this.tag = t;
 	}
+	/**
+	 * Checks if an Object is a node_data and if its equal to our node(this).
+	 * @param object
+	 * @return true if equal else false;
+	 */
 	public boolean equals(Object object) {
 		if (object instanceof node_data) {
 			node_data node = (node_data)(object);

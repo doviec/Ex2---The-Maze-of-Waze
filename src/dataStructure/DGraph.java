@@ -13,19 +13,12 @@ public class DGraph implements graph{
 	private int edge_counter;
 	private Map<Integer,node_data> nodeMap;                       
 	private Map<Integer,HashMap<Integer,edge_data>> edgeMap;     // <src,<des,Edge>>
-
+	private int MC;
 	public DGraph() {
 		edge_counter = 0;
 		nodeMap = new HashMap<>();
 		edgeMap = new HashMap<>();
-	}
-
-	// Shallow copy
-	public DGraph(Map<Integer, node_data> nodeMap,
-			Map<Integer, HashMap<Integer, edge_data>> edgeMap) {
-		this.edge_counter = 0;
-		this.nodeMap = nodeMap;
-		this.edgeMap = edgeMap;
+		this.MC = 0;
 	}
 
 	// deep copy
@@ -33,6 +26,7 @@ public class DGraph implements graph{
 		this.edge_counter = dGraph.edge_counter;
 		this.nodeMap = new HashMap<>(dGraph.nodeMap);
 		this.edgeMap = new HashMap<>(dGraph.edgeMap);
+		this.MC = dGraph.MC;
 	}
 
 	@Override
@@ -52,6 +46,7 @@ public class DGraph implements graph{
 		if (n == null) {
 			throw new RuntimeException("Not allowed to add null");
 		}
+		this.MC++;
 		nodeMap.put(n.getKey(), n);
 	}
 	@Override
@@ -69,6 +64,7 @@ public class DGraph implements graph{
 			edgeMap.put(src, temp_edge);	
 			edge_counter++;
 		}
+		this.MC++;
 	}
 	@Override
 	public Collection<node_data> getV() {
@@ -94,6 +90,7 @@ public class DGraph implements graph{
 				edge_counter--;
 			}
 		}
+		this.MC--;
 		return nodeMap.remove(key);
 	}
 	@Override
@@ -103,6 +100,7 @@ public class DGraph implements graph{
 		}
 		if (edgeMap.get(src) != null) {
 			edge_counter--;
+			this.MC--;
 			return edgeMap.get(src).remove(dest);
 		}
 		return null;
@@ -117,6 +115,6 @@ public class DGraph implements graph{
 	}
 	@Override
 	public int getMC() {
-		return 0;
+		return this.MC;
 	}
 }

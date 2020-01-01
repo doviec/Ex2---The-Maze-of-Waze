@@ -92,22 +92,15 @@ public class testGraphAlgo {
 			node_data node = new Node(i,new Point3D(0,0,0), 0,"", 0);
 			graph.addNode(node);
 		}	
-		graph.connect(0, 1, 2);
 		graph.connect(1, 2, 3);
 		graph.connect(2, 3, 4);
 		graph.connect(3, 4, 1);
-		graph.connect(4, 5, 4);
-		graph.connect(5, 6, 1);
-		graph.connect(6, 7, 3);
-		graph.connect(7, 8, 4);
 		graph.connect(8, 9, 1);
 		graph.connect(9, 10, 1);
 		graph.connect(10, 11, 4);
 		graph.connect(11, 12, 3);
 		graph.connect(12, 13, 4);
 		graph.connect(13, 14, 1);
-		graph.connect(14, 0, 15);
-		graph.connect(14, 3, 1);
 		graph.connect(10, 13, 2);
 		graph.connect(3, 11, 6);
 
@@ -120,6 +113,41 @@ public class testGraphAlgo {
 		}
 		string += (path.get(path.size()-1).getKey() + "");
 		assertEquals("1 > 2 > 3 > 11 > 12 > 13", string);
-		//System.out.println(string);
+		System.out.println(string);
+	}
+	@Test
+	void testTSP() {
+		graph graph = new DGraph();
+		for (int i = 0; i < 5; i++) {
+			node_data node = new Node(i,new Point3D(0,0,0), 0,"", 0);
+			graph.addNode(node);
+		}	
+		graph.connect(0, 3, 2);
+		graph.connect(3, 2, 3);
+		graph.connect(2, 1, 4);
+		graph.connect(1, 4, 4);
+		
+		GraphAlgo algo = new GraphAlgo();
+		algo.init(graph);
+		List<Integer> targets = new ArrayList<Integer>();
+		targets.add(0);
+		targets.add(1);
+		targets.add(2);
+		targets.add(3);
+		targets.add(4);
+		List<node_data> path = algo.TSP(targets);
+		String string = "";
+		for (int i = 0; i < path.size()-1 ;i++) {
+			string += (path.get(i).getKey()+"" + " > ");
+		}
+		string += (path.get(path.size()-1).getKey() + "");
+		System.out.println(string);
+
+		
+		
+		
+		
+		
+		
 	}
 }

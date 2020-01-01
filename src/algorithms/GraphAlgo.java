@@ -7,16 +7,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-
 import java.util.HashSet;
 import java.util.List;
 
-import org.w3c.dom.Node;
-
-import com.sun.jdi.Value;
-
 import dataStructure.DGraph;
+import dataStructure.Node;
 import dataStructure.edge_data;
 import dataStructure.graph;
 import dataStructure.node_data;
@@ -87,6 +82,14 @@ public class GraphAlgo implements graph_algorithms{
 		}
 		return true;
 	}
+	/**
+	 * This recursive method returns true if a src node is connected to a dest or if one
+	 * of its edges is connected to the dest and so on.
+	 * @param src
+	 * @param key
+	 * @param keySet
+	 * @return true if src connected to dest (not only direct)
+	 */
 	public boolean isSrcConnected(int src, int key, HashSet keySet) {
 
 		if (graph.getE(src) == null || graph.getE(src).isEmpty()) {   //checks if src has any destinations (has edges)
@@ -137,17 +140,20 @@ public class GraphAlgo implements graph_algorithms{
 			nextNode = null;
 			double currentNodeWeight = currentNode.getWeight();
 			double minWeight = 999999;
-			for (edge_data neighbour : graph.getE(currentNode.getKey()) ) {
-				destKey = neighbour.getDest();     //the key of the edge
-				checkWeight = currentNodeWeight + neighbour.getWeight();    //the cost of getting to the neighbor
-				nodeWeight = graph.getNode(destKey).getWeight();
-				if (checkWeight <= nodeWeight) {   //if the cost is cheaper 
-					graph.getNode(destKey).setWeight(checkWeight);         // update the weight
-					graph.getNode(destKey).setInfo(currentNode.getInfo() + ">" + currentNode.getKey() + "");
-				}//if we haven't visited and the node has a minimum weight than update nextNode and minWeight
-				if (listNotVisited.contains(graph.getNode(destKey)) && nodeWeight <= minWeight){ 
-					nextNode = graph.getNode(destKey);
-					minWeight = nodeWeight;
+			if (graph.getE(currentNode.getKey()) != null) {
+				for (edge_data neighbour : graph.getE(currentNode.getKey()) ) {
+					destKey = neighbour.getDest();     //the key of the edge
+					checkWeight = currentNodeWeight + neighbour.getWeight();    //the cost of getting to the neighbor
+					nodeWeight = graph.getNode(destKey).getWeight();
+					if (checkWeight <= nodeWeight) {   //if the cost is cheaper 
+						graph.getNode(destKey).setWeight(checkWeight);         // update the weight
+						String newInfo = currentNode.getInfo() + ">" + currentNode.getKey() + "";
+						graph.getNode(destKey).setInfo(newInfo); //saves the whole path
+					}//if we haven't visited and the node has a minimum weight than update nextNode and minWeight
+					if (listNotVisited.contains(graph.getNode(destKey)) && nodeWeight <= minWeight){ 
+						nextNode = graph.getNode(destKey);
+						minWeight = nodeWeight;
+					}
 				}
 			}
 			listNotVisited.remove(currentNode);
@@ -164,41 +170,66 @@ public class GraphAlgo implements graph_algorithms{
 		List<node_data> path = new ArrayList<node_data>();
 		shortestPathDist(src, dest);
 		String stringPath = graph.getNode(dest).getInfo();
-		int lengthPath = graph.getNode(dest).getInfo().length();
+		int lengthPath = graph.getNode(dest).getInfo().length(); //length of the path
 		int key = 0;
-		System.out.println(stringPath);
 		for (int i = 1; i < lengthPath; i++) {  
 			if (stringPath.charAt(i) == '>') {  
-				path.add(graph.getNode(key));
+				node_data node = new Node((Node) graph.getNode(key));
+				path.add(node);
 				key = 0;
 			}else {
 				key = key*10 + Character.getNumericValue(stringPath.charAt(i)); //key will be equal to the node in the string before the '>' 
 			}
 		}
-		path.add(graph.getNode(key));
-		path.add(graph.getNode(dest));
+		node_data node1 = new Node((Node) graph.getNode(key));
+		path.add(node1);
+		node_data node2 = new Node((Node) graph.getNode(dest));
+		path.add(node2);
 		return path;
 	}
 
 	@Override
 	public List<node_data> TSP(List<Integer> targets) {
-
-		return null;
+		if (targets.size() <= 1) {
+			throw new RuntimeException("Please enter at least two nodes");
+		}
+		List<node_data> path = new ArrayList<node_data>();
+		List<node_data> temp;
+		int src; 
+		int dest; 
+		String nodePath;
+		String target;
+		while (targets.size() > 1) {
+			src = targets.get(0);
+			dest = targets.get(1);
+			targets.remove(0);
+			temp = shortestPath(src, dest);
+			path.addAll(temp);
+			nodePath = this.graph.getNode(dest).getInfo();  //the path to dest Node
+			for (int i = 1; i < targets.size(); i++) {     //checks for all the 
+				target = String.valueOf(targets.get(i));
+				if (contains(nodePath, target)) {
+					targets.remove(i);
+					i--;
+				}
+			}
+		}		
+		return path;
 	}
-//	/**
-//	 * checks if strings contains string
-//	 * @param s1
-//	 * @param s2
-//	 * @return
-//	 */
-//		public boolean contains(String s1, String s2) {
-//			String [] str = s1.split(" ");
-//			for (int i = 0; i < str.length; i++) {
-//				if (str[i].equals(s2)) {
-//					return true;
-//				}
-//			}return false;
-//		}
+	/**
+	 * checks if string s1 contains string s2
+	 * @param s1
+	 * @param s2
+	 * @return true if positive answer
+	 */
+	public boolean contains(String s1, String s2) {
+		String [] str = s1.split(">");
+		for (int i = 0; i < str.length; i++) {
+			if (str[i].equals(s2)) {
+				return true;
+			}
+		}return false;
+	}
 
 	@Override
 	public graph copy() {

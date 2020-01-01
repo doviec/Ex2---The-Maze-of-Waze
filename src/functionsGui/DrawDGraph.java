@@ -18,22 +18,22 @@ import javax.swing.JFrame;
 import dataStructure.*;
 import utils.Point3D;
 
-public class Draw_DGraph extends JFrame implements ActionListener, MouseListener
+public class DrawDGraph extends JFrame implements ActionListener, MouseListener
 {
 	private graph graph;
 
 
-	public Draw_DGraph() {
+	public DrawDGraph() {
 		this.graph = null;
 		initGUI(1000, 1000);
 	}
-	public Draw_DGraph(graph gra) {
+	public DrawDGraph(graph gra) {
 		this.graph = gra;
 		initGUI(1000, 1000);
 		this.setVisible(true);
 	}
 
-	public Draw_DGraph(graph gra, int width, int height)
+	public DrawDGraph(graph gra, int width, int height)
 	{
 		this.graph = gra;
 		initGUI(width, height);
@@ -173,7 +173,7 @@ public class Draw_DGraph extends JFrame implements ActionListener, MouseListener
 		graph.connect(3, 4 , 4);
 		graph.connect(4, 5, 2);
 		graph.connect(4, 6, 1);
-		Draw_DGraph gg = new Draw_DGraph(graph);
+		DrawDGraph gg = new DrawDGraph(graph);
 
 	}
 }
