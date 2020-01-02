@@ -97,7 +97,7 @@ public class DrawDGraph extends JFrame implements ActionListener, MouseListener
 		op_RemoveEdge.addActionListener(this);
 		MenuItem op_shortPath = new MenuItem("Shortest Path");
 		op_shortPath.addActionListener(this);
-		MenuItem op_IsConnected = new MenuItem("Is connected");
+		MenuItem op_IsConnected = new MenuItem("Is Connected");
 		op_removeNode.addActionListener(this);
 		MenuItem op_TSP = new MenuItem("TSP");
 		op_removeNode.addActionListener(this);
@@ -233,9 +233,7 @@ public class DrawDGraph extends JFrame implements ActionListener, MouseListener
 						frame.setVisible(false);
 					}
 				}catch(Exception ex) {
-
 				}
-
 			}
 		});
 	}
@@ -270,7 +268,6 @@ public class DrawDGraph extends JFrame implements ActionListener, MouseListener
 					repaint();
 					frame.setVisible(false);
 				}catch (Exception ex) {
-
 				}
 			}
 		});
@@ -316,11 +313,72 @@ public class DrawDGraph extends JFrame implements ActionListener, MouseListener
 		});
 	}
 	public void isConnected() {
+		JFrame frame = new JFrame(" Is Connected");
+		JLabel connectLabel = new JLabel("Check if this graph Is Connected: ");
 
+		JButton button = new JButton("Check");
+		frame.setVisible(true);
+		frame.setLayout(new FlowLayout());
+		frame.setBounds(150, 0, 600, 120);
+		frame.add(connectLabel);
+		frame.add(button);
+		button.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					if (algo.isConnected()) {
+						JOptionPane.showMessageDialog(frame,"This graph is connected");
+					}
+					else {
+						JOptionPane.showMessageDialog(frame,"This graph is not connected");
+					}
+				}
+				catch (Exception ex) {
+
+				}
+			}
+		});
 	}
 	public void shortPath() {
+		JFrame frame = new JFrame("Short Path");
+		JLabel srcLabel = new JLabel("Src: ");
+		JTextField srcTxt = new JTextField(10);
+		JLabel destLabel = new JLabel("Dest: ");
+		JTextField destTxt = new JTextField(10);
+		JButton button = new JButton("Calculate");
+		frame.setVisible(true);
+		frame.setLayout(new FlowLayout());
+		frame.setBounds(150, 0, 600, 120);
+		frame.add(srcLabel);
+		frame.add(srcTxt);
+		frame.add(destLabel);
+		frame.add(destTxt);
+		frame.add(button);
+		button.addActionListener(new ActionListener() {
 
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					int src = Integer.parseInt(srcTxt.getText());
+					int dest = Integer.parseInt(destTxt.getText());
+					if (graph.getNode(src) == null || graph.getNode(dest) == null) {
+						JOptionPane.showMessageDialog(frame,"Please insert valid nodes for src & dest");
+					}else {
+						double value = algo.shortestPathDist(src, dest);
+						repaint();
+						JOptionPane.showMessageDialog(frame,"The price from: " + src + " to " + dest +" is: " + value);
+						frame.setVisible(false);
+					}
+
+				}
+				catch (Exception ex) {
+
+				}
+			}
+		});
 	}
+	
 	public void TSP() {
 
 	}
@@ -330,11 +388,14 @@ public class DrawDGraph extends JFrame implements ActionListener, MouseListener
 	{
 		String action = e.getActionCommand();
 		switch (action) {
+		case "Save file" : writeFileDialog();
+		case "Load file" : readFileDialog();
 		case "Connect Edge" : connectEdge();
 		case "Remove Node" : removeNode();
 		case "Add Node" : addNode();
 		case "Remove Edge" : removeEdge();
-
+		case "Is Connected" : isConnected();
+		case "Shortest Path" : shortPath();
 		}
 
 	}
@@ -416,24 +477,28 @@ public class DrawDGraph extends JFrame implements ActionListener, MouseListener
 	public static void main(String[] args) {
 		DGraph graph = new DGraph();
 		int j = 0;
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < 6; i++) {
 			node_data node = new Node(i,new Point3D(0,0,0), 0,"", 0);
 			graph.addNode(node);
 		}
-		for (int i = 0; i < 20; i++) {
+		for (int i = 0; i < 6; i++) {
 			j += i;
-			if (((i - 3) > 0) && j < 20) {
+			if (((i - 3) > 0) && j < 5) {
 				graph.connect(i, j, 9999);
 			}
 		}
-		graph.connect(0, 5, 10);
-		graph.connect(0, 2, 20);
-		graph.connect(1, 4, 25);
-		graph.connect(1, 6, 7);
-		graph.connect(2, 3, 30);
+		graph.connect(0, 1, 7);
+		graph.connect(0, 2, 2);
+		graph.connect(1, 2, 5);
+		graph.connect(1, 4, 3);
+		graph.connect(2, 3, 3);
 		graph.connect(3, 4 , 4);
 		graph.connect(4, 5, 2);
-		graph.connect(4, 6, 1);
+		graph.connect(5, 4, 6);
+		graph.connect(4, 3, 1);
+		graph.connect(3, 2 , 4);
+		graph.connect(2, 1, 2);
+		graph.connect(4, 2, 1);
 		DrawDGraph gg = new DrawDGraph(graph);
 
 	}

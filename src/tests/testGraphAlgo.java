@@ -20,6 +20,23 @@ import utils.Point3D;
 public class testGraphAlgo {
 
 	@Test
+	void testSave() {
+		graph graph = new DGraph();
+		for (int i = 0; i < 7; i++) {
+			node_data node = new Node(i,new Point3D(0,0,0), 0,"", 0);
+			graph.addNode(node);
+		}	
+		graph.connect(0, 1, 2);
+		graph.connect(1, 2, 3);
+		graph.connect(2, 3, 4);
+		graph.connect(2, 0, 4);
+		graph.connect(3, 4, 4);
+		graph.connect(4, 0, 4);
+		GraphAlgo algo = new GraphAlgo();
+		algo.init(graph);
+		algo.save("save file.txt");
+	}
+	@Test
 	void testIsConeccted() {
 		graph graph = new DGraph();
 		for (int i = 0; i < 7; i++) {
