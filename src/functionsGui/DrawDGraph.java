@@ -187,7 +187,7 @@ public class DrawDGraph extends JFrame implements ActionListener, MouseListener
 		frame.add(addLabel);
 		frame.add(button);
 		button.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -202,7 +202,7 @@ public class DrawDGraph extends JFrame implements ActionListener, MouseListener
 					repaint();
 					frame.setVisible(false);
 				}catch (Exception ex) {
-					
+
 				}
 			}
 		});
@@ -268,6 +268,7 @@ public class DrawDGraph extends JFrame implements ActionListener, MouseListener
 					double weight = Double.parseDouble(weightTxt.getText());
 					graph.connect(src, dest, weight);
 					repaint();
+					frame.setVisible(false);
 				}catch (Exception ex) {
 
 				}
@@ -275,7 +276,44 @@ public class DrawDGraph extends JFrame implements ActionListener, MouseListener
 		});
 	}
 	public void removeEdge() {
+		JFrame frame = new JFrame("Delete an Edge");
+		JLabel srcLabel = new JLabel("Src: ");
+		JTextField srcTxt = new JTextField(10);
+		JLabel destLabel = new JLabel("Dest: ");
+		JTextField destTxt = new JTextField(10);
+		JButton button = new JButton("Remove Edge");
+		frame.setVisible(true);
+		frame.setLayout(new FlowLayout());
+		frame.setBounds(150, 0, 600, 120);
+		frame.add(srcLabel);
+		frame.add(srcTxt);
+		frame.add(destLabel);
+		frame.add(destTxt);
+		frame.add(button);
+		button.addActionListener(new ActionListener() {
 
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					int src = Integer.parseInt(srcTxt.getText());
+					int dest = Integer.parseInt(destTxt.getText());
+					if (graph.getNode(src) == null || graph.getNode(dest) == null) {
+						JOptionPane.showMessageDialog(frame,"Please insert valid nodes for src & dest");
+					}else if (graph.getEdge(src, dest) == null) {
+						JOptionPane.showMessageDialog(frame,"Edge does not exist");
+					}else {
+						graph.removeEdge(src, dest);
+						repaint();
+						JOptionPane.showMessageDialog(frame,"deleted edge: " + src + "-->" + dest);
+						frame.setVisible(false);
+					}
+
+				}
+				catch (Exception ex) {
+
+				}
+			}
+		});
 	}
 	public void isConnected() {
 
@@ -295,7 +333,8 @@ public class DrawDGraph extends JFrame implements ActionListener, MouseListener
 		case "Connect Edge" : connectEdge();
 		case "Remove Node" : removeNode();
 		case "Add Node" : addNode();
-		
+		case "Remove Edge" : removeEdge();
+
 		}
 
 	}
