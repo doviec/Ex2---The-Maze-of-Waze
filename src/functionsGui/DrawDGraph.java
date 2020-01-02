@@ -19,6 +19,7 @@ import java.util.Collection;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import algorithms.GraphAlgo;
@@ -102,12 +103,12 @@ public class DrawDGraph extends JFrame implements ActionListener, MouseListener
 		op_removeNode.addActionListener(this);
 		//add items to menu bar etc
 		menuBar.add(operations);
-		operations.add(op_shortPath);
 		operations.add(op_addNode);
 		operations.add(op_removeNode);
-		operations.add(op_RemoveEdge);
 		operations.add(op_ConnectEdge);
+		operations.add(op_RemoveEdge);
 		operations.add(op_IsConnected);
+		operations.add(op_shortPath);
 		operations.add(op_TSP);		
 		//action listener
 		op_ConnectEdge.addActionListener(this);
@@ -176,6 +177,68 @@ public class DrawDGraph extends JFrame implements ActionListener, MouseListener
 			System.out.print("Error writing file  " + ex);
 		}
 	}
+	public void addNode() {
+		JFrame frame = new JFrame("Add Node");
+		JLabel addLabel = new JLabel("Add Node");
+		JButton button = new JButton("Add");
+		frame.setVisible(true);
+		frame.setLayout(new FlowLayout());
+		frame.setBounds(200, 0, 250, 100);
+		frame.add(addLabel);
+		frame.add(button);
+		button.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					int key = graph.nodeSize() + 1;
+					double x,y, w;
+					x = (Math.random() * 800) + 100;
+					y = (Math.random() * 700) + 100 ;
+					w = Double.POSITIVE_INFINITY;
+					node_data node = new Node(key, new Point3D(x,y,0), w, "", -1);
+					graph.addNode(node);
+					JOptionPane.showMessageDialog(frame, "Succefully add Node number: " + node.getKey());
+					repaint();
+					frame.setVisible(false);
+				}catch (Exception ex) {
+					
+				}
+			}
+		});
+	}
+	public void removeNode() {
+		JFrame frame = new JFrame ("Remove Node");
+		JLabel nodeLabel = new JLabel("Node to remove: ");
+		JTextField nodeTxt = new JTextField(10);
+		JButton button = new JButton ("Remove");
+		frame.setVisible(true);
+		frame.setLayout(new FlowLayout());
+		frame.setBounds(200, 0, 250, 100);
+		frame.add(nodeLabel);
+		frame.add(nodeTxt);
+		frame.add(button);
+		button.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					int keyNode = Integer.parseInt(nodeTxt.getText());
+					if (graph.getNode(keyNode) == null) {
+						JOptionPane.showMessageDialog(frame, "Please insert a valid Node");
+					}else {
+						graph.removeNode(keyNode);
+						JOptionPane.showMessageDialog(frame, "Node: " + keyNode + "was removed");
+						repaint();
+						frame.setVisible(false);
+					}
+				}catch(Exception ex) {
+
+				}
+
+			}
+		});
+	}
 	public void connectEdge() {
 		JFrame frame = new JFrame("Connect an Edge");
 		JLabel srcLabel = new JLabel("Src: ");
@@ -184,7 +247,7 @@ public class DrawDGraph extends JFrame implements ActionListener, MouseListener
 		JTextField destTxt = new JTextField(10);
 		JLabel weightLabel = new JLabel("weight: ");
 		JTextField weightTxt = new JTextField(15);
-		JButton addButton = new JButton("Add Edge");
+		JButton button = new JButton("Add Edge");
 		frame.setVisible(true);
 		frame.setLayout(new FlowLayout());
 		frame.setBounds(150, 0, 600, 120);
@@ -194,10 +257,9 @@ public class DrawDGraph extends JFrame implements ActionListener, MouseListener
 		frame.add(destTxt);
 		frame.add(weightLabel);
 		frame.add(weightTxt);
-		frame.add(addButton);
-		
-		addButton.addActionListener(new ActionListener() {
-			
+		frame.add(button);
+
+		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -207,12 +269,23 @@ public class DrawDGraph extends JFrame implements ActionListener, MouseListener
 					graph.connect(src, dest, weight);
 					repaint();
 				}catch (Exception ex) {
-					
+
 				}
 			}
 		});
 	}
+	public void removeEdge() {
 
+	}
+	public void isConnected() {
+
+	}
+	public void shortPath() {
+
+	}
+	public void TSP() {
+
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) 
@@ -220,6 +293,9 @@ public class DrawDGraph extends JFrame implements ActionListener, MouseListener
 		String action = e.getActionCommand();
 		switch (action) {
 		case "Connect Edge" : connectEdge();
+		case "Remove Node" : removeNode();
+		case "Add Node" : addNode();
+		
 		}
 
 	}
@@ -301,13 +377,13 @@ public class DrawDGraph extends JFrame implements ActionListener, MouseListener
 	public static void main(String[] args) {
 		DGraph graph = new DGraph();
 		int j = 0;
-		for (int i = 0; i < 50; i++) {
+		for (int i = 0; i < 20; i++) {
 			node_data node = new Node(i,new Point3D(0,0,0), 0,"", 0);
 			graph.addNode(node);
 		}
-		for (int i = 0; i < 50; i++) {
+		for (int i = 0; i < 20; i++) {
 			j += i;
-			if (((i - 3) > 0) && j < 50) {
+			if (((i - 3) > 0) && j < 20) {
 				graph.connect(i, j, 9999);
 			}
 		}
