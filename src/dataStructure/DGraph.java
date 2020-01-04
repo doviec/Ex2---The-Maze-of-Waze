@@ -55,16 +55,20 @@ public class DGraph implements graph{
 			throw new RuntimeException("Not allowed to build edge to a Node that does not exist");
 		}
 		Edge edge = new Edge(src,dest,w);
-		if (edgeMap.get(src) != null) {  //checks if the src(which represents a node) has a destination
+		if (this.getEdge(src, dest) != null) {
 			edgeMap.get(src).put(dest,edge);
-			edge_counter++;
-		}else {                             //add new src(key) and to src add a new hashmap(des and Edge);
-			HashMap<Integer, edge_data> temp_edge = new HashMap<>();
-			temp_edge.put(dest, edge);
-			edgeMap.put(src, temp_edge);	
-			edge_counter++;
+		}else {	
+			if (edgeMap.get(src) != null) {  //checks if the src(which represents a node) has a destination
+				edgeMap.get(src).put(dest,edge);
+				edge_counter++;
+			}else {                             //add new src(key) and to src add a new hashmap(des and Edge);
+				HashMap<Integer, edge_data> temp_edge = new HashMap<>();
+				temp_edge.put(dest, edge);
+				edgeMap.put(src, temp_edge);	
+				edge_counter++;
+			}
+			this.MC++;
 		}
-		this.MC++;
 	}
 	@Override
 	public Collection<node_data> getV() {

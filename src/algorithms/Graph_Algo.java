@@ -22,14 +22,14 @@ import dataStructure.node_data;
  * @author 
  *
  */
-public class GraphAlgo implements graph_algorithms{
+public class Graph_Algo implements graph_algorithms{
 
 	private DGraph graph;
 
-	public GraphAlgo() {
+	public Graph_Algo() {
 
 	}
-	public GraphAlgo(graph gra) {
+	public Graph_Algo(graph gra) {
 		init(gra);
 	}
 	@Override
@@ -40,11 +40,13 @@ public class GraphAlgo implements graph_algorithms{
 
 	@Override
 	public void init(String file_name) {
-		GraphAlgo saveGraph = new GraphAlgo();
+		Graph_Algo saveGraph = new Graph_Algo();
+		saveGraph = null;
 		try {
 			FileInputStream file = new FileInputStream(file_name);
 			ObjectInputStream input = new ObjectInputStream(file);
-			saveGraph = (GraphAlgo) input.readObject();
+			saveGraph = (Graph_Algo) input.readObject();
+			this.graph = saveGraph.graph;
 			input.close();
 			file.close();
 		} catch (Exception e) {
@@ -61,7 +63,7 @@ public class GraphAlgo implements graph_algorithms{
 			out.close();
 			file.close();
 		} catch (IOException e) {
-			System.err.println("**exception**");
+			System.err.println("**save file error**");
 		}
 
 	}
@@ -196,7 +198,8 @@ public class GraphAlgo implements graph_algorithms{
 	@Override
 	public List<node_data> TSP(List<Integer> targets) {
 		if (targets.size() <= 1) {
-			throw new RuntimeException("Please enter at least two nodes");
+			System.out.println("**TSP** Please enter at least two nodes");
+			return null;
 		}
 		if (!this.isConnected()) {
 			if (!firmlyConnected(targets)) {   //checks if the 'nodes'represented by the list are firmly connected 
@@ -255,7 +258,7 @@ public class GraphAlgo implements graph_algorithms{
 				}				
 			}
 		}
-		GraphAlgo temp = new GraphAlgo();
+		Graph_Algo temp = new Graph_Algo();
 		temp.init(tempGraph);
 		if (temp.isConnected()) {
 			return true;

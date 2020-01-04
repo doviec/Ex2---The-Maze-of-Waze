@@ -1,8 +1,8 @@
-package tests;
+package Tests;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import algorithms.GraphAlgo;
+import algorithms.Graph_Algo;
 import dataStructure.DGraph;
 import dataStructure.Node;
 import dataStructure.graph;
@@ -32,7 +32,7 @@ public class testGraphAlgo {
 		graph.connect(2, 0, 4);
 		graph.connect(3, 4, 4);
 		graph.connect(4, 0, 4);
-		GraphAlgo algo = new GraphAlgo();
+		Graph_Algo algo = new Graph_Algo();
 		algo.init(graph);
 		algo.save("save file.txt");
 	}
@@ -55,7 +55,7 @@ public class testGraphAlgo {
 		graph.connect(5, 6, 4);
 		graph.connect(2, 5, 4);
 
-		GraphAlgo algo = new GraphAlgo();
+		Graph_Algo algo = new Graph_Algo();
 		algo.init(graph);
 		assertTrue(algo.isConnected());
 	}	@Test
@@ -75,7 +75,7 @@ public class testGraphAlgo {
 		graph1.connect(4, 5, 4);
 		graph1.connect(2, 4, 1);
 
-		GraphAlgo algo1 = new GraphAlgo();
+		Graph_Algo algo1 = new Graph_Algo();
 		algo1.init(graph1);
 		assertFalse(algo1.isConnected());		
 	}
@@ -99,7 +99,7 @@ public class testGraphAlgo {
 		graph.connect(5, 0, 1);
 		graph.connect(2, 4, 1);
 
-		GraphAlgo algo = new GraphAlgo();
+		Graph_Algo algo = new Graph_Algo();
 		algo.init(graph);
 		assertEquals(6,algo.shortestPathDist(0, 4));
 	}
@@ -122,7 +122,7 @@ public class testGraphAlgo {
 		graph.connect(10, 13, 2);
 		graph.connect(3, 11, 6);
 
-		GraphAlgo algo = new GraphAlgo();
+		Graph_Algo algo = new Graph_Algo();
 		algo.init(graph);
 		List<node_data> path = algo.shortestPath(1, 13);
 		String string = "";
@@ -149,7 +149,7 @@ public class testGraphAlgo {
 		graph.connect(6, 0, 4);
 		graph.connect(4, 7, 1);
 		
-		GraphAlgo algo = new GraphAlgo();
+		Graph_Algo algo = new Graph_Algo();
 		algo.init(graph);
 		List<Integer> targets = new ArrayList<Integer>();
 		targets.add(3);
@@ -175,16 +175,12 @@ public class testGraphAlgo {
 			graph.addNode(node);
 		}	
 		graph.connect(0, 1, 10);
-		graph.connect(1, 0, 10);
-		graph.connect(2, 1, 10);
 		graph.connect(1, 2, 10);
-		graph.connect(3, 2, 2);
-		graph.connect(2, 3, 3);
-		graph.connect(3, 0, 4);
-		graph.connect(0, 3, 4);
-		graph.connect(0, 4, 4);
-		
-		GraphAlgo algo = new GraphAlgo();
+		graph.connect(2, 4, 10);
+		graph.connect(3, 4, 10);
+		graph.connect(4, 2, 10);
+
+		Graph_Algo algo = new Graph_Algo();
 		algo.init(graph);
 		List<Integer> targets = new ArrayList<Integer>();
 		targets.add(1);
@@ -192,11 +188,6 @@ public class testGraphAlgo {
 		targets.add(4);
 		targets.add(3);
 		List<node_data> path = algo.TSP(targets);
-		String string = "";
-		for (int i = 0; i < path.size()-1 ;i++) {
-			string += (path.get(i).getKey()+"" + " > ");
-		}
-		string += (path.get(path.size()-1).getKey() + "");
-		System.out.println(string);
+		assertNull(path);
 	}
 }

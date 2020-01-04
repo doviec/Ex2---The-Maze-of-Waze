@@ -1,4 +1,4 @@
-package functionsGui;
+package gui;
 
 import java.awt.Color;
 import java.awt.FileDialog;
@@ -14,7 +14,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -22,39 +24,39 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
-import algorithms.GraphAlgo;
+import algorithms.Graph_Algo;
 import dataStructure.*;
 
 import utils.Point3D;
 
-public class DrawDGraph extends JFrame implements ActionListener, MouseListener
+public class drawGraph extends JFrame implements ActionListener, MouseListener
 {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID =28022802280228021L;
 	private graph graph;
-	private GraphAlgo algo;
+	private Graph_Algo algo;
 	private int MC;
 
 
-	public DrawDGraph() {
+	public drawGraph() {
 		this.graph = new DGraph();
-		algo = new GraphAlgo();
+		algo = new Graph_Algo();
 		algo.init(graph);
 		this.MC = graph.getMC();
 		initGUI(1100, 1000);
 	}
-	public DrawDGraph(graph gra) {
+	public drawGraph(graph gra) {
 		this.MC = gra.getMC();
 		this.graph = gra;
-		algo = new GraphAlgo();
+		algo = new Graph_Algo();
 		algo.init(gra);
 		initGUI(1100, 1000);
 		this.setVisible(true);
 	}
 
-	public DrawDGraph(graph gra, int width, int height)
+	public drawGraph(graph gra, int width, int height)
 	{
 		this.MC = gra.getMC();
 		this.graph = gra;
@@ -77,10 +79,24 @@ public class DrawDGraph extends JFrame implements ActionListener, MouseListener
 		menuBar.add(menu);
 		this.setMenuBar(menuBar);
 
-		Menu loadFile = new Menu("Load file");
-		loadFile.addActionListener(this);
-		Menu saveFile = new Menu("Save file");
-		saveFile.addActionListener(this);
+		MenuItem loadFile = new MenuItem("Load file");
+		loadFile.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				readFileDialog();
+
+			}
+		});
+		MenuItem saveFile = new MenuItem("Save file");
+		saveFile.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				writeFileDialog();
+
+			}
+		});
 		menu.add(saveFile);   
 		menu.add(loadFile);
 
@@ -88,19 +104,67 @@ public class DrawDGraph extends JFrame implements ActionListener, MouseListener
 		operations.addActionListener(this);
 
 		MenuItem op_addNode = new MenuItem("Add Node");
-		op_addNode.addActionListener(this);
+		op_addNode.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				addNode();
+
+			}
+		});
 		MenuItem op_removeNode = new MenuItem("Remove Node");
-		op_removeNode.addActionListener(this);
+		op_removeNode.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				removeNode();
+
+			}
+		});
 		MenuItem op_ConnectEdge = new MenuItem("Connect Edge");
-		op_ConnectEdge.addActionListener(this);
+		op_ConnectEdge.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				connectEdge();
+
+			}
+		});
 		MenuItem op_RemoveEdge = new MenuItem("Remove Edge");
-		op_RemoveEdge.addActionListener(this);
+		op_RemoveEdge.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				removeEdge();
+
+			}
+		});
 		MenuItem op_shortPath = new MenuItem("Shortest Path");
-		op_shortPath.addActionListener(this);
+		op_shortPath.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				shortPath();
+
+			}
+		});
 		MenuItem op_IsConnected = new MenuItem("Is Connected");
-		op_removeNode.addActionListener(this);
+		op_removeNode.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				isConnected();
+
+			}
+		});
 		MenuItem op_TSP = new MenuItem("TSP");
-		op_removeNode.addActionListener(this);
+		op_removeNode.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				TSP();
+			}
+		});
 		//add items to menu bar etc
 		menuBar.add(operations);
 		operations.add(op_addNode);
@@ -110,14 +174,7 @@ public class DrawDGraph extends JFrame implements ActionListener, MouseListener
 		operations.add(op_IsConnected);
 		operations.add(op_shortPath);
 		operations.add(op_TSP);		
-		//action listener
-		op_ConnectEdge.addActionListener(this);
-		op_IsConnected.addActionListener(this);
-		op_RemoveEdge.addActionListener(this);
-		op_removeNode.addActionListener(this);
-		op_shortPath.addActionListener(this);
-		op_addNode.addActionListener(this);
-		op_TSP.addActionListener(this);
+
 		this.addMouseListener(this);
 
 		Thread thread = new Thread(new Runnable() {
@@ -200,7 +257,6 @@ public class DrawDGraph extends JFrame implements ActionListener, MouseListener
 					graph.addNode(node);
 					JOptionPane.showMessageDialog(frame, "Succefully add Node number: " + node.getKey());
 					repaint();
-					frame.setVisible(false);
 				}catch (Exception ex) {
 
 				}
@@ -304,7 +360,6 @@ public class DrawDGraph extends JFrame implements ActionListener, MouseListener
 						JOptionPane.showMessageDialog(frame,"deleted edge: " + src + "-->" + dest);
 						frame.setVisible(false);
 					}
-
 				}
 				catch (Exception ex) {
 
@@ -378,11 +433,57 @@ public class DrawDGraph extends JFrame implements ActionListener, MouseListener
 			}
 		});
 	}
-	
 	public void TSP() {
+		JFrame frame = new JFrame(" TSP");
+		JLabel connectLabel = new JLabel("Check for TSP ");
+		JLabel elementsLabel = new JLabel("elements: ");
+		JTextField addIntTxt = new JTextField(10);
+		JButton addButton = new JButton("add");
+		JButton checkButton = new JButton("Check");
 
+		frame.setLayout(new FlowLayout());
+		frame.setBounds(150, 0, 600, 120);
+		frame.add(connectLabel);
+		frame.add(elementsLabel);
+		frame.add(addIntTxt);
+		frame.add(addButton);			
+		frame.add(checkButton);
+		frame.setVisible(true);
+
+		List<Integer> Intlist = new ArrayList<Integer>(); 
+		addButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					int element = Integer.parseInt(addIntTxt.getText());
+					Intlist.add(element);
+				}
+				catch (Exception ex) {
+				}
+			}
+		});
+		checkButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					String path= "";
+					List<node_data> nodeList = algo.TSP(Intlist);
+					int [] arr = new int [nodeList.size()];
+					for(int i=0; i<nodeList.size(); i++) {
+						arr[i] = nodeList.get(i).getKey();
+						path += ", " + arr[i];
+					}
+					JOptionPane.showMessageDialog(frame,path);
+					frame.setVisible(false);
+				}catch(Exception ex) {
+
+				}
+
+			}
+		});
 	}
-
 	@Override
 	public void actionPerformed(ActionEvent e) 
 	{
@@ -396,6 +497,7 @@ public class DrawDGraph extends JFrame implements ActionListener, MouseListener
 		case "Remove Edge" : removeEdge();
 		case "Is Connected" : isConnected();
 		case "Shortest Path" : shortPath();
+		case "TSP" : TSP();
 		}
 
 	}
@@ -488,18 +590,17 @@ public class DrawDGraph extends JFrame implements ActionListener, MouseListener
 			}
 		}
 		graph.connect(0, 1, 7);
-		graph.connect(0, 2, 2);
-		graph.connect(1, 2, 5);
-		graph.connect(1, 4, 3);
-		graph.connect(2, 3, 3);
-		graph.connect(3, 4 , 4);
-		graph.connect(4, 5, 2);
-		graph.connect(5, 4, 6);
+		graph.connect(1, 2, 2);
+		graph.connect(2, 3, 5);
+		graph.connect(3, 4, 3);
+		graph.connect(4, 5, 3);
+		graph.connect(5, 4 , 4);
+		graph.connect(4, 5, 2);;
 		graph.connect(4, 3, 1);
 		graph.connect(3, 2 , 4);
 		graph.connect(2, 1, 2);
-		graph.connect(4, 2, 1);
-		DrawDGraph gg = new DrawDGraph(graph);
+		graph.connect(1, 0, 1);
+		drawGraph gg = new drawGraph(graph);
 
 	}
 }
