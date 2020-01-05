@@ -20,7 +20,6 @@ public class DGraph implements graph{
 		edgeMap = new HashMap<>();
 		this.MC = 0;
 	}
-
 	// deep copy
 	public DGraph(DGraph dGraph) {
 		this.edge_counter = dGraph.edge_counter;

@@ -67,7 +67,9 @@ public class drawGraph extends JFrame implements ActionListener, MouseListener
 		nodeCounter = gra.nodeSize();
 		this.setVisible(true);
 	}
-
+/**
+ * Initiate the bounds of the frame by a given width and height and adding menus
+ */
 	private void initGUI(int width, int heigt) 
 	{
 		this.setSize(width, heigt);
@@ -178,7 +180,7 @@ public class drawGraph extends JFrame implements ActionListener, MouseListener
 		operations.add(op_TSP);		
 
 		this.addMouseListener(this);
-
+		//incase of changes of MC the graph will be repainted
 		Thread thread = new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -196,7 +198,7 @@ public class drawGraph extends JFrame implements ActionListener, MouseListener
 		this.setMenuBar(menuBar);
 		this.setVisible(true);
 		this.addMouseListener(this);
-	}
+	}//load file
 	public void readFileDialog() {
 		//		try read from the file by Elizabeth
 		FileDialog fd = new FileDialog(this, "Load", FileDialog.LOAD);
@@ -217,6 +219,7 @@ public class drawGraph extends JFrame implements ActionListener, MouseListener
 			System.out.print("Error reading file " + ex);
 		}
 	}
+	//save a file
 	public void writeFileDialog() {
 		//		 try write to the file by Elizabeth
 		FileDialog fd = new FileDialog(this, "Save", FileDialog.SAVE);
@@ -236,6 +239,7 @@ public class drawGraph extends JFrame implements ActionListener, MouseListener
 			System.out.print("Error writing file  " + ex);
 		}
 	}
+	//all the functions of the menu arer written from here until the cases method
 	public void addNode() {
 		JFrame frame = new JFrame("Add Node");
 		JLabel addLabel = new JLabel("Add Node");
@@ -371,7 +375,7 @@ public class drawGraph extends JFrame implements ActionListener, MouseListener
 		});
 	}
 	public void isConnected() {
-		JFrame frame = new JFrame(" Is Connected");
+		JFrame frame = new JFrame("Is Connected");
 		JLabel connectLabel = new JLabel("Check if this graph Is Connected: ");
 
 		JButton button = new JButton("Check");
@@ -478,7 +482,7 @@ public class drawGraph extends JFrame implements ActionListener, MouseListener
 						arr[i] = nodeList.get(i).getKey();
 						path += ", " + arr[i];
 					}
-					JOptionPane.showMessageDialog(frame,path);
+					JOptionPane.showMessageDialog(frame,"The path is: " +path);
 					frame.setVisible(false);
 				}catch(Exception ex) {
 
@@ -504,6 +508,11 @@ public class drawGraph extends JFrame implements ActionListener, MouseListener
 		}
 
 	}
+	/**
+	 * this method sets random locations for the nodes in the graph
+	 * @param width
+	 * @param height
+	 */
 	private void setPoints(int width, int height) {
 
 		double x, y;
@@ -517,11 +526,9 @@ public class drawGraph extends JFrame implements ActionListener, MouseListener
 			node.setLocation(point);
 		}
 	}
-
 	public void paint(Graphics g)
 	{
 		super.paint(g);
-
 		for (node_data node : graph.getV()) {
 			int x = node.getLocation().ix();
 			int y = node.getLocation().iy();
@@ -541,44 +548,35 @@ public class drawGraph extends JFrame implements ActionListener, MouseListener
 					g.setFont(new Font("David", Font.ITALIC, 15));
 					g.drawString(String.valueOf(edge.getWeight()), (x + xDest) / 2, (y + yDest) / 2);
 					g.setColor(Color.orange);
-
+					//to draw the way of the edge iv simply divided 4 times in a row the middle location of the edge.
 					int directionX = (((((((x + xDest) /2) + xDest) /2)+ xDest) /2) + xDest)/2  ;
 					int directionY = (((((((y + yDest) /2) + yDest) /2)+ yDest) /2) + yDest)/2  ;
 
-					g.fillOval(directionX, directionY, 8, 8);
+					g.fillOval(directionX, directionY, 9, 9);
 				}
 			}
 
 		}
-	}
+	}//opps by yael landau
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		System.out.println("mouseClicked");
-
 	}
-
 	@Override
 	public void mousePressed(MouseEvent e) {
-
 	}
-
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		System.out.println("mouseReleased");
-
 	}
-
 	@Override
 	public void mouseEntered(MouseEvent e) {
 		System.out.println("mouseEntered");
-
 	}
-
 	@Override
 	public void mouseExited(MouseEvent e) {
 		System.out.println("mouseExited");
 	}
-
 	public static void main(String[] args) {
 		DGraph graph = new DGraph();
 		int j = 0;
