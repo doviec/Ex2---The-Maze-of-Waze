@@ -240,6 +240,11 @@ public class Graph_Algo implements graph_algorithms{
 			throw new RuntimeException("Cant reach a node invalid list!!");
 		}
 	}
+	/**
+	 * this method checks if the list containing int whom represents nodes represent a connected graph
+	 * @param targets
+	 * @return true if connected
+	 */
 	private boolean firmlyConnected(List<Integer> targets) {
 		graph tempGraph = new DGraph();
 		int src, dest;

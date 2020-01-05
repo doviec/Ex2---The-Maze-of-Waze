@@ -38,7 +38,7 @@ public class drawGraph extends JFrame implements ActionListener, MouseListener
 	private graph graph;
 	private Graph_Algo algo;
 	private int MC;
-
+	private int nodeCounter;
 
 	public drawGraph() {
 		this.graph = new DGraph();
@@ -46,6 +46,7 @@ public class drawGraph extends JFrame implements ActionListener, MouseListener
 		algo.init(graph);
 		this.MC = graph.getMC();
 		initGUI(1100, 1000);
+		nodeCounter = graph.nodeSize();
 	}
 	public drawGraph(graph gra) {
 		this.MC = gra.getMC();
@@ -54,8 +55,8 @@ public class drawGraph extends JFrame implements ActionListener, MouseListener
 		algo.init(gra);
 		initGUI(1100, 1000);
 		this.setVisible(true);
+		nodeCounter = gra.nodeSize();
 	}
-
 	public drawGraph(graph gra, int width, int height)
 	{
 		this.MC = gra.getMC();
@@ -63,6 +64,7 @@ public class drawGraph extends JFrame implements ActionListener, MouseListener
 		algo.init(gra);
 		initGUI(1100, 1000);
 		initGUI(width, height);
+		nodeCounter = gra.nodeSize();
 		this.setVisible(true);
 	}
 
@@ -248,7 +250,8 @@ public class drawGraph extends JFrame implements ActionListener, MouseListener
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					int key = graph.nodeSize() + 1;
+					int key = nodeCounter + 1;
+					nodeCounter++;
 					double x,y, w;
 					x = (Math.random() * 800) + 100;
 					y = (Math.random() * 700) + 100 ;
